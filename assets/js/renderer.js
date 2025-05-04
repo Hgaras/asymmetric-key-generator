@@ -11,17 +11,10 @@ function remove_label_text(label_id) {
     document.getElementById(label_id).classList = []
 }
 
-function togglePassphrase() {
-    const passInput = document.getElementById("passphrase-input");
-    const toggle = document.getElementById("toggle-password");
-    passInput.type = toggle.checked ? "text" : "password";
-}
-
 // Actions
 const generateKeys = async () => {
     keyType = document.getElementById('select-keyType').value
-    let passphrase = document.getElementById('passphrase-input').value || undefined;
-    let { privateKey, publicKey } = await window.utils.generateKeys(keyType, passphrase)
+    let { privateKey, publicKey } = await window.utils.generateKeys(keyType)
     document.getElementById('private-key-text-area').value = privateKey
     document.getElementById('public-key-text-area').value = publicKey
 
@@ -32,8 +25,7 @@ const generateKeys = async () => {
 
 const generatePublicKey = async () => {
     privateKey = document.getElementById('private-key-text-area').value
-    let passphrase = document.getElementById('passphrase-input').value || undefined;
-    let publicKey = await window.utils.generatePublicKey(privateKey, passphrase)
+    let publicKey = await window.utils.generatePublicKey(privateKey)
     document.getElementById('public-key-text-area').value = publicKey
 
     if (publicKey) {
@@ -109,20 +101,3 @@ const publicKeySaveButton = document.getElementById('public-key-save-button')
 publicKeySaveButton.addEventListener('click', function () {
     saveKey("Public")
 })
-
-const togglePassword = document.getElementById("toggle-password");
-togglePassword.addEventListener("click", function () {
-    const passInput = document.getElementById("passphrase-input");
-    const eyeOpen = document.getElementById("eye-open");
-    const eyeClosed = document.getElementById("eye-closed");
-
-    if (passInput.type === "password") {
-        passInput.type = "text";
-        eyeOpen.classList.remove("hidden");
-        eyeClosed.classList.add("hidden");
-    } else {
-        passInput.type = "password";
-        eyeOpen.classList.add("hidden");
-        eyeClosed.classList.remove("hidden");
-    }
-});

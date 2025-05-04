@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, clipboard, dialog, nativeImage } = require('electron')
 const { is } = require('electron-util')
-const { generateKeyPairSync, createPublicKey, createPrivateKey } = require('crypto')
+const { generateKeyPairSync, createPublicKey } = require('crypto')
 const fs = require('fs')
 const path = require('path')
 const {
@@ -66,7 +66,7 @@ app.on('window-all-closed', function () {
 })
 
 // Actions
-async function generateKeys (keyType, passphrase) {
+async function generateKeys (keyType) {
   if (keyType === 'rsa-2048') {
     return generateKeyPairSync('rsa', {
       modulusLength: 2048,
@@ -76,9 +76,7 @@ async function generateKeys (keyType, passphrase) {
       },
       privateKeyEncoding: {
         type: 'pkcs8',
-        format: 'pem',
-        passphrase,
-        cipher: passphrase ? 'aes-256-cbc': undefined
+        format: 'pem'
       }
     })
   } else if (keyType === 'rsa-4096') {
@@ -90,9 +88,7 @@ async function generateKeys (keyType, passphrase) {
       },
       privateKeyEncoding: {
         type: 'pkcs8',
-        format: 'pem',
-        passphrase,
-        cipher: passphrase ? 'aes-256-cbc': undefined
+        format: 'pem'
       }
     })
   } else {
@@ -103,25 +99,18 @@ async function generateKeys (keyType, passphrase) {
       },
       privateKeyEncoding: {
         type: 'pkcs8',
-        format: 'pem',
-        passphrase,
-        cipher: passphrase ? 'aes-256-cbc': undefined
+        format: 'pem'
       }
-    });
+    })
   }
 }
 
-async function generatePublicKey (privateKey, passphrase) {
+async function generatePublicKey (privateKey) {
   try {
-    const unencryptedPrivateKey = passphrase ? createPrivateKey({
-      key: privateKey,
-      passphrase
-    }): privateKey;
-    const publickKeyObject = createPublicKey(unencryptedPrivateKey)
+    const publickKeyObject = createPublicKey(privateKey)
     return publickKeyObject.export({ format: 'pem', type: 'spki' })
   } catch (error) {
-    if(error.code === 'ERR_OSSL_BAD_DECRYPT') return 'Wrong passphrase provided!'
-    else return ''
+    return ''
   }
 }
 
